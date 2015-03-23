@@ -7,10 +7,10 @@ install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
   - choco install resharper-clt
 
-cache:
-  - packages -> **\packages.config
-  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
-  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+#cache:
+#  - packages -> **\packages.config
+#  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
+#  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 before_build:
   - nuget restore src
