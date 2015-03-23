@@ -1,0 +1,40 @@
+configuration: Release
+
+init:
+  - git config --global core.autocrlf true
+  
+install:
+  - GitVersion /output buildserver /UpdateAssemblyInfo true
+  - choco install resharper-clt
+
+cache:
+  - packages -> **\packages.config
+  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+
+before_build:
+  - nuget restore src
+
+build:
+  project: src/ScriptCs.ComponentModel.Composition.sln
+  verbosity: minimal
+
+after_build:
+  - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
+  #- NVika buildserver "inspectcodereport.xml" --debug --includesource
+# build nuget package
+  - nuget pack NugetAssets\ScriptCs.ComponentModel.Composition.nuspec -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\
+  - nuget pack NugetAssets\ScriptCs.ComponentModel.Composition.symbols.nuspec -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\
+
+artifacts:
+  - path: inspectcodereport.xml
+
+  - path: src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
+    name: ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
+
+  - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.nupkg
+    name: ScriptCs.ComponentModel.Composition.nupkg
+
+  - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.symbols.nupkg
+    name: ScriptCs.ComponentModel.Composition.symbols.nupkg
+

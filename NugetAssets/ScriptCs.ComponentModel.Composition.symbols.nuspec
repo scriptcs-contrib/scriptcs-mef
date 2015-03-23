@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>ScriptCs.ComponentModel.Composition</id>
+        <version>$version$</version>
+        <title>ScriptCs.ComponentModel.Composition</title>
+        <authors>laedit</authors>
+        <owners>laedit</owners>
+        <licenseUrl>https://github.com/scriptcs-contrib/scriptcs-mef/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/scriptcs-contrib/scriptcs-mef</projectUrl>
+        <iconUrl>https://cdn.rawgit.com/scriptcs-contrib/scriptcs-mef/master/icon.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>ScriptCs.ComponentModel.Composition provide a ScriptCsCatalog to extend an application with the power of MEF and ScriptCs</description>
+        <tags>scriptcs, script, csx, mef, scriptcscatalog</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
+        </frameworkAssemblies>
+        <dependencies>
+            <dependency id="ScriptCs.Hosting" version="0.13.3" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="readme.txt" target="" />
+        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll" target="lib\net45" />
+        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.XML" target="lib\net45" />
+        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.pdb" target="lib\net45" />
+        <file src="**\*.cs" target="src" />
+    </files>
+</package>
