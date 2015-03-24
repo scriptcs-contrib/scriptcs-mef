@@ -16,7 +16,7 @@
             <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
         </frameworkAssemblies>
         <dependencies>
-            <dependency id="ScriptCs.Hosting" version="0.13.3" />
+            <dependency id="ScriptCs.Hosting" version="0.14.0" />
         </dependencies>
     </metadata>
     <files>
