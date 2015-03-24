@@ -21,9 +21,5 @@
     </metadata>
     <files>
         <file src="readme.txt" target="" />
-        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll" target="lib\net45" />
-        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.XML" target="lib\net45" />
-        <file src="..\src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.pdb" target="lib\net45" />
-        <file src="**\*.cs" target="src" />
     </files>
 </package>

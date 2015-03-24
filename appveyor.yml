@@ -23,8 +23,8 @@ after_build:
   - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
   #- NVika buildserver "inspectcodereport.xml" --debug --includesource
 # build nuget package
-  - nuget pack NugetAssets\ScriptCs.ComponentModel.Composition.nuspec -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\
-  - nuget pack NugetAssets\ScriptCs.ComponentModel.Composition.symbols.nuspec -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\
+  - mkdir NugetAssets
+  - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
 
 artifacts:
   - path: inspectcodereport.xml
