@@ -5,7 +5,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 {
     public class MEFHost
     {
-        [ImportMany]
+        [ImportMany(AllowRecomposition = true)]
         public List<IDoSomething> Plugins { get; set; }
     }
 

@@ -242,7 +242,7 @@ namespace ScriptCs.ComponentModel.Composition
         /// <returns></returns>
         public override IEnumerable<Tuple<ComposablePartDefinition, ExportDefinition>> GetExports(ImportDefinition definition)
         {
-            return _catalog.GetExports(definition);
+            return _catalog == null ? Enumerable.Empty<Tuple<ComposablePartDefinition, ExportDefinition>>() : _catalog.GetExports(definition);
         }
 
         /// <summary>
@@ -260,16 +260,6 @@ namespace ScriptCs.ComponentModel.Composition
         public void Refresh()
         {
             ThrowIfDisposed();
-            if (_loadedFiles == null)
-            {
-                throw new NullReferenceException("No scripts to refresh");
-            }
-
-            // If there is no folder, there is no change to refresh, the scripts files cannot be modified
-            if (string.IsNullOrEmpty(Path))
-            {
-                return;
-            }
 
             ComposablePartDefinition[] addedDefinitions;
             ComposablePartDefinition[] removedDefinitions;
@@ -287,18 +277,12 @@ namespace ScriptCs.ComponentModel.Composition
                     beforeFiles = _loadedFiles.ToArray();
                 }
 
-                // Don't go any further if there's no work to do
-                if (beforeFiles.Length == afterFiles.Length && beforeFiles.All(afterFiles.Contains))
-                {
-                    return;
-                }
-
                 var newCatalog = ExecuteScripts(afterFiles);
 
                 // Notify listeners to give them a preview before completing the changes
                 addedDefinitions = newCatalog.ToArray();
 
-                removedDefinitions = _catalog.ToArray();
+                removedDefinitions = _catalog == null ? new ComposablePartDefinition[0] : _catalog.ToArray();
 
                 using (var atomicComposition = new AtomicComposition())
                 {
