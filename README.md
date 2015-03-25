@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/43y2p8xpsryqf40p?svg=true)](https://ci.appveyor.com/project/laedit/scriptcs-mef)
+[![Build status](https://ci.appveyor.com/api/projects/status/43y2p8xpsryqf40p?svg=true)](https://ci.appveyor.com/project/laedit/scriptcs-mef) [![Coverage Status](https://coveralls.io/repos/scriptcs-contrib/scriptcs-mef/badge.svg)](https://coveralls.io/r/scriptcs-contrib/scriptcs-mef)
 
 ![Project icon](icon.png)
 

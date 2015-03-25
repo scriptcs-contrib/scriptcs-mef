@@ -6,11 +6,17 @@ init:
 install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
   - choco install resharper-clt
+  - choco install opencover -source https://nuget.org/api/v2/
+  - choco install coveralls.io -source https://nuget.org/api/v2/
 
 #cache:
 #  - packages -> **\packages.config
 #  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
 #  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: mzA3KujNlhtanIr2YQn90ZQdEQm1dGB9UJrgrZexSySIYHwUszIT2XYv37tuqDsF
 
 before_build:
   - nuget restore src
@@ -26,6 +32,10 @@ after_build:
   - mkdir NugetAssets
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
 
+test_script:
+  - OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"xunit.console.clr4.exe" -targetargs:"""src\ScriptCs.ComponentModel.Composition.Tests\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll"" /noshadow /appveyor" -output:coverage.xml -returntargetcode
+  - coveralls.net --opencover coverage.xml
+
 artifacts:
   - path: inspectcodereport.xml
 
@@ -37,4 +47,3 @@ artifacts:
 
   - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.symbols.nupkg
     name: ScriptCs.ComponentModel.Composition.symbols.nupkg
-
