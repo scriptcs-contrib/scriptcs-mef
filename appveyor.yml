@@ -33,7 +33,7 @@ after_build:
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
 
 test_script:
-  - OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"C:\Tools\xUnit20\xunit.console.x86.exe" -targetargs:"""src\ScriptCs.ComponentModel.Composition.Test\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll"" /noshadow /appveyor" -output:coverage.xml -returntargetcode
+  - OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"C:\Tools\xUnit20\xunit.console.x86.exe" -targetargs:""src\ScriptCs.ComponentModel.Composition.Test\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll" -noshadow -appveyor" -output:coverage.xml -returntargetcode
   - coveralls.net --opencover coverage.xml
 
 artifacts:
