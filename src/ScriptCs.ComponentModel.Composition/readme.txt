@@ -10,3 +10,6 @@ and / or
  - ScriptCs.Engine.Mono  (Install-Package ScriptCs.Engine.Mono)
 
 The ScriptCsCatalog will select automatically which one to use at runtime depending on the platform (Windows or Linux).
+
+If you are experiencing some issues please first update the ScriptCs.Hosting package to the same version as ScriptCs.Engine.* package.
+If you have still issues, please fill one on GitHub: https://github.com/scriptcs-contrib/scriptcs-mef/issues.
