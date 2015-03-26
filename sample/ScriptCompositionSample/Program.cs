@@ -1,7 +1,6 @@
 ﻿using ScriptCs.ComponentModel.Composition;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.IO;
 
 namespace ScriptCompositionSample
 {
