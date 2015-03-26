@@ -178,8 +178,6 @@ namespace ScriptCs.ComponentModel.Composition
                 scriptArgs = new string[0];
             }
 
-            System.Diagnostics.Debug.WriteLine("Foo");
-
             _scriptArgs = scriptArgs;
             Initialize(path, searchPattern, fileSystem, references);
         }
