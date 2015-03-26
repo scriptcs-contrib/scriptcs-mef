@@ -27,6 +27,8 @@ namespace ScriptCs.ComponentModel.Composition
         private bool _isDisposed;
         private AssemblyCatalog _catalog;
         private ReadOnlyCollection<string> _loadedFiles;
+        private static bool _resolverInitialized;
+        private string[] _scriptArgs;
 
         /// <summary>
         ///     Translated absolute path of the path passed into the constructor of <see cref="DirectoryCatalog"/>.
@@ -94,8 +96,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(string path, params Type[] references)
-            : this(path, "*.csx", references)
+        public ScriptCsCatalog(string path, string[] scriptArgs, params Type[] references)
+            : this(path, "*.csx", scriptArgs, references)
         {
         }
 
@@ -113,8 +115,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(string path, IFileSystem fileSystem, params Type[] references)
-            : this(path, "*.csx", fileSystem, references)
+        public ScriptCsCatalog(string path, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
+            : this(path, "*.csx", fileSystem, scriptArgs, references)
         {
         }
 
@@ -132,8 +134,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(string path, string searchPattern, params Type[] references)
-            : this(path, searchPattern, new FileSystem(), references)
+        public ScriptCsCatalog(string path, string searchPattern, string[] scriptArgs, params Type[] references)
+            : this(path, searchPattern, new FileSystem(), scriptArgs, references)
         {
         }
 
@@ -154,7 +156,7 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(string path, string searchPattern, IFileSystem fileSystem, params Type[] references)
+        public ScriptCsCatalog(string path, string searchPattern, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -171,6 +173,14 @@ namespace ScriptCs.ComponentModel.Composition
                 throw new ArgumentNullException("fileSystem");
             }
 
+            if (scriptArgs == null)
+            {
+                scriptArgs = new string[0];
+            }
+
+            System.Diagnostics.Debug.WriteLine("Foo");
+
+            _scriptArgs = scriptArgs;
             Initialize(path, searchPattern, fileSystem, references);
         }
 
@@ -183,8 +193,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(IEnumerable<string> scriptFiles, params Type[] references)
-            : this(scriptFiles, new FileSystem(), references)
+        public ScriptCsCatalog(IEnumerable<string> scriptFiles, string[] scriptArgs, params Type[] references)
+            : this(scriptFiles, new FileSystem(), scriptArgs, references)
         {
         }
 
@@ -200,7 +210,7 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="references">
         ///     References to add automatically to all the scripts.
         /// </param>
-        public ScriptCsCatalog(IEnumerable<string> scriptFiles, IFileSystem fileSystem, params Type[] references)
+        public ScriptCsCatalog(IEnumerable<string> scriptFiles, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
         {
             if (scriptFiles == null || !scriptFiles.Any())
             {
@@ -400,6 +410,8 @@ namespace ScriptCs.ComponentModel.Composition
             _references = references;
             Path = path;
             FullPath = GetFullPath(path);
+            _fileSystem.CurrentDirectory = FullPath;
+            
             SearchPattern = searchPattern;
 
             var scriptFiles = GetFiles();
@@ -508,13 +520,19 @@ namespace ScriptCs.ComponentModel.Composition
             var scriptServicesBuilder = new ScriptServicesBuilder(console, logger);
             scriptServicesBuilder.Overrides[typeof(IScriptEngine)] = engine;
             scriptServicesBuilder.Overrides[typeof(IFileSystem)] = _fileSystem;
+            scriptServicesBuilder.ScriptName(String.Empty);
+
+            if (!_resolverInitialized)
+            {
+                scriptServicesBuilder.InitializationServices.GetAppDomainAssemblyResolver().Initialize();
+                _resolverInitialized = true;
+            }
 
             var scriptServices = scriptServicesBuilder.Build();
-
+           
             var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(_fileSystem.CurrentDirectory, true);
             var packs = scriptServices.ScriptPackResolver.GetPacks();
-
-            scriptServices.Executor.Initialize(assemblies, packs);
+            scriptServices.Executor.Initialize(assemblies, packs, _scriptArgs);
             scriptServices.Executor.AddReferences(typeof(Attribute), typeof(ExportAttribute));
             scriptServices.Executor.ImportNamespaces("System.ComponentModel.Composition");
 
