@@ -26,6 +26,8 @@ build:
   verbosity: minimal
 
 after_build:
+  - echo %APPVEYOR_PULL_REQUEST_TITLE%
+  - echo %APPVEYOR_PULL_REQUEST_NUMBER%
   - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
   #- NVika buildserver "inspectcodereport.xml" --debug --includesource
 # build nuget package
