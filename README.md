@@ -53,6 +53,6 @@ public class MyGreeter : IGreeter
 }
 ```
 
-## Limitation
+## Contributors
 
-Sadly ScriptPack doesn't work.
+Thanks to [Glenn Block](https://github.com/glennblock) Script Packs can be used!
