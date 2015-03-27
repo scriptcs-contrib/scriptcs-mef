@@ -4,7 +4,7 @@
         <id>ScriptCs.ComponentModel.Composition</id>
         <version>$version$</version>
         <title>ScriptCs.ComponentModel.Composition</title>
-        <authors>laedit</authors>
+        <authors>Jérémie Bertrand, Glenn Block</authors>
         <owners>laedit</owners>
         <licenseUrl>https://github.com/scriptcs-contrib/scriptcs-mef/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/scriptcs-contrib/scriptcs-mef</projectUrl>
