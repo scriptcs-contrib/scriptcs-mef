@@ -5,9 +5,9 @@ init:
   
 install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
-  - choco install resharper-clt
-  - choco install opencover -source https://nuget.org/api/v2/
-  - choco install coveralls.io -source https://nuget.org/api/v2/
+  - choco install resharper-clt -y
+  - choco install opencover -source https://nuget.org/api/v2/ -y
+  - choco install coveralls.io -source https://nuget.org/api/v2/ -y
 
 #cache:
 #  - packages -> **\packages.config
@@ -26,8 +26,6 @@ build:
   verbosity: minimal
 
 after_build:
-  - echo %APPVEYOR_PULL_REQUEST_TITLE%
-  - echo %APPVEYOR_PULL_REQUEST_NUMBER%
   - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
   #- NVika buildserver "inspectcodereport.xml" --debug --includesource
 # build nuget package
