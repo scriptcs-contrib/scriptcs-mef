@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/43y2p8xpsryqf40p?svg=true)](https://ci.appveyor.com/project/laedit/scriptcs-mef) [![Coverage Status](https://coveralls.io/repos/scriptcs-contrib/scriptcs-mef/badge.svg)](https://coveralls.io/r/scriptcs-contrib/scriptcs-mef)
+[![Licence Apache 2](https://img.shields.io/badge/licence-Apache%202-blue.svg)](https://github.com/scriptcs-contrib/scriptcs-mef/blob/master/LICENSE) [![Build status](https://ci.appveyor.com/api/projects/status/43y2p8xpsryqf40p?svg=true)](https://ci.appveyor.com/project/laedit/scriptcs-mef) [![Coverage Status](https://coveralls.io/repos/scriptcs-contrib/scriptcs-mef/badge.svg)](https://coveralls.io/r/scriptcs-contrib/scriptcs-mef)
 
 ![Project icon](icon.png)
 
@@ -52,6 +52,12 @@ public class MyGreeter : IGreeter
 ...
 }
 ```
+
+**Script Packs**
+
+Script Packs can be used the location varies depending on the approach used:
+ - script by script: the packages location is the current directory of your application
+ - folder: the packages location is the folder specified
 
 ## Contributors
 
