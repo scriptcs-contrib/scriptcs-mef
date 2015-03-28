@@ -22,13 +22,11 @@ namespace ScriptCs.ComponentModel.Composition
     public class ScriptCsCatalog : ComposablePartCatalog, INotifyComposablePartCatalogChanged, ICompositionElement
     {
         private readonly object _thisLock = new object();
-        private IFileSystem _fileSystem = new FileSystem();
-        private Type[] _references;
+        private readonly ScriptCsCatalogOptions _options;
         private bool _isDisposed;
         private AssemblyCatalog _catalog;
         private ReadOnlyCollection<string> _loadedFiles;
         private static bool _resolverInitialized;
-        private string[] _scriptArgs;
 
         /// <summary>
         ///     Translated absolute path of the path passed into the constructor of <see cref="DirectoryCatalog"/>.
@@ -93,11 +91,8 @@ namespace ScriptCs.ComponentModel.Composition
         ///     Path to the directory to scan for assemblies to add to the catalog.
         ///     The path needs to be absolute or relative to <see cref="AppDomain.BaseDirectory"/>
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(string path, string[] scriptArgs, params Type[] references)
-            : this(path, "*.csx", scriptArgs, references)
+        public ScriptCsCatalog(string path)
+            : this(path, "*.csx", new ScriptCsCatalogOptions())
         {
         }
 
@@ -109,14 +104,11 @@ namespace ScriptCs.ComponentModel.Composition
         ///     Path to the directory to scan for assemblies to add to the catalog.
         ///     The path needs to be absolute or relative to <see cref="AppDomain.BaseDirectory"/>
         /// </param>
-        /// <param name="fileSystem">
-        ///     File system used to get the scripts files.
+        /// <param name="options">
+        ///     Options of the ScriptCsCatalog.
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(string path, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
-            : this(path, "*.csx", fileSystem, scriptArgs, references)
+        public ScriptCsCatalog(string path, ScriptCsCatalogOptions options)
+            : this(path, "*.csx", options)
         {
         }
 
@@ -131,11 +123,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="searchPattern">
         ///     Search pattern to get all scripts files from the directory.
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(string path, string searchPattern, string[] scriptArgs, params Type[] references)
-            : this(path, searchPattern, new FileSystem(), scriptArgs, references)
+        public ScriptCsCatalog(string path, string searchPattern)
+            : this(path, searchPattern, new ScriptCsCatalogOptions())
         {
         }
 
@@ -150,13 +139,10 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="searchPattern">
         ///     Search pattern to get all scripts files from the directory.
         /// </param>
-        /// <param name="fileSystem">
-        ///     File system used to get the scripts files.
+        /// <param name="options">
+        ///     Options of the ScriptCsCatalog.
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(string path, string searchPattern, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
+        public ScriptCsCatalog(string path, string searchPattern, ScriptCsCatalogOptions options)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -168,18 +154,14 @@ namespace ScriptCs.ComponentModel.Composition
                 throw new ArgumentNullException("searchPattern");
             }
 
-            if (fileSystem == null)
+            if (options == null)
             {
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException("options");
             }
 
-            if (scriptArgs == null)
-            {
-                scriptArgs = new string[0];
-            }
+            _options = options.OverridesNullByDefault();
 
-            _scriptArgs = scriptArgs;
-            Initialize(path, searchPattern, fileSystem, references);
+            Initialize(path, searchPattern, options);
         }
 
         /// <summary>
@@ -188,11 +170,8 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="scriptFiles">
         ///     Scripts files to be executed and added to the catalog.
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(IEnumerable<string> scriptFiles, string[] scriptArgs, params Type[] references)
-            : this(scriptFiles, new FileSystem(), scriptArgs, references)
+        public ScriptCsCatalog(IEnumerable<string> scriptFiles)
+            : this(scriptFiles, new ScriptCsCatalogOptions())
         {
         }
 
@@ -202,25 +181,24 @@ namespace ScriptCs.ComponentModel.Composition
         /// <param name="scriptFiles">
         ///     Scripts files to be executed and added to the catalog.
         /// </param>
-        /// <param name="fileSystem">
-        ///     File system used to get the scripts files.
+        /// <param name="options">
+        ///     Options of the ScriptCsCatalog.
         /// </param>
-        /// <param name="references">
-        ///     References to add automatically to all the scripts.
-        /// </param>
-        public ScriptCsCatalog(IEnumerable<string> scriptFiles, IFileSystem fileSystem, string[] scriptArgs, params Type[] references)
+        public ScriptCsCatalog(IEnumerable<string> scriptFiles, ScriptCsCatalogOptions options)
         {
             if (scriptFiles == null || !scriptFiles.Any())
             {
                 throw new ArgumentNullException("scriptFiles");
             }
 
-            if (fileSystem == null)
+            if (options == null)
             {
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException("options");
             }
 
-            Initialize(scriptFiles, fileSystem, references);
+            _options = options.OverridesNullByDefault();
+
+            Initialize(scriptFiles, options);
         }
 
         /// <summary>
@@ -402,14 +380,12 @@ namespace ScriptCs.ComponentModel.Composition
             }
         }
 
-        private void Initialize(string path, string searchPattern, IFileSystem fileSystem, Type[] references)
+        private void Initialize(string path, string searchPattern, ScriptCsCatalogOptions options)
         {
-            _fileSystem = fileSystem;
-            _references = references;
             Path = path;
             FullPath = GetFullPath(path);
-            _fileSystem.CurrentDirectory = FullPath;
-            
+            _options.FileSystem.CurrentDirectory = FullPath;
+
             SearchPattern = searchPattern;
 
             var scriptFiles = GetFiles();
@@ -418,14 +394,11 @@ namespace ScriptCs.ComponentModel.Composition
             _catalog = ExecuteScripts(scriptFiles);
         }
 
-        private void Initialize(IEnumerable<string> scriptFiles, IFileSystem fileSystem, Type[] references)
+        private void Initialize(IEnumerable<string> scriptFiles, ScriptCsCatalogOptions options)
         {
-            _fileSystem = fileSystem;
-            _references = references;
-
             foreach (var scriptFile in scriptFiles)
             {
-                if (!_fileSystem.FileExists(scriptFile))
+                if (!_options.FileSystem.FileExists(scriptFile))
                 {
                     throw new FileNotFoundException(string.Format("Script: '{0}' does not exist", scriptFile), scriptFile);
                 }
@@ -467,9 +440,9 @@ namespace ScriptCs.ComponentModel.Composition
 
         private string GetFullPath(string path)
         {
-            if (!IOPath.IsPathRooted(path) && _fileSystem.CurrentDirectory != null)
+            if (!IOPath.IsPathRooted(path) && _options.FileSystem.CurrentDirectory != null)
             {
-                path = IOPath.Combine(_fileSystem.CurrentDirectory, path);
+                path = IOPath.Combine(_options.FileSystem.CurrentDirectory, path);
             }
 
             return IOPath.GetFullPath(path);
@@ -477,12 +450,12 @@ namespace ScriptCs.ComponentModel.Composition
 
         private string[] GetFiles()
         {
-            if (!_fileSystem.DirectoryExists(FullPath))
+            if (!_options.FileSystem.DirectoryExists(FullPath))
             {
                 throw new DirectoryNotFoundException(string.Format("Scripts folder: '{0}' does not exist", FullPath));
             }
 
-            return _fileSystem.EnumerateFiles(FullPath, SearchPattern).ToArray();
+            return _options.FileSystem.EnumerateFiles(FullPath, SearchPattern).ToArray();
         }
 
         private string GetDisplayName()
@@ -517,7 +490,8 @@ namespace ScriptCs.ComponentModel.Composition
             var logger = configurator.GetLogger();
             var scriptServicesBuilder = new ScriptServicesBuilder(console, logger);
             scriptServicesBuilder.Overrides[typeof(IScriptEngine)] = engine;
-            scriptServicesBuilder.Overrides[typeof(IFileSystem)] = _fileSystem;
+            scriptServicesBuilder.Overrides[typeof(IFileSystem)] = _options.FileSystem;
+            // FixMe replace by .LoadScriptPacks(); when ScriptCs.Hosting v0.15 will be available
             scriptServicesBuilder.ScriptName(String.Empty);
 
             if (!_resolverInitialized)
@@ -527,16 +501,16 @@ namespace ScriptCs.ComponentModel.Composition
             }
 
             var scriptServices = scriptServicesBuilder.Build();
-           
-            var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(_fileSystem.CurrentDirectory, true);
+
+            var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(_options.FileSystem.CurrentDirectory, true);
             var packs = scriptServices.ScriptPackResolver.GetPacks();
-            scriptServices.Executor.Initialize(assemblies, packs, _scriptArgs);
+            scriptServices.Executor.Initialize(assemblies, packs, _options.ScriptArgs);
             scriptServices.Executor.AddReferences(typeof(Attribute), typeof(ExportAttribute));
             scriptServices.Executor.ImportNamespaces("System.ComponentModel.Composition");
 
-            if (_references != null)
+            if (_options.References != null)
             {
-                scriptServices.Executor.AddReferenceAndImportNamespaces(_references);
+                scriptServices.Executor.AddReferenceAndImportNamespaces(_options.References);
             }
 
             return scriptServices;

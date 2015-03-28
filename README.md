@@ -40,10 +40,10 @@ public class MyGreeter : IGreeter
 But you can pass the `IGreeter` type as reference to the `ScriptCsCatalog`:
 ```cs
 // You can add script by script
-var catalog = new ScriptCsCatalog(new[] { "ScriptA.csx", "ScriptB.csx" }, typeof(IGreeter));
+var catalog = new ScriptCsCatalog(new[] { "ScriptA.csx", "ScriptB.csx" }, new ScriptCsCatalogOptions { References = new[] { typeof(IGreeter) } });
 
 // Or an entire folder
-var catalog = new ScriptCsCatalog("Scripts", typeof(IGreeter));
+var catalog = new ScriptCsCatalog("Scripts", new ScriptCsCatalogOptions { References = new[] typeof(IGreeter) } });
 ```
 And the script will become:
 ```cs
@@ -52,6 +52,14 @@ public class MyGreeter : IGreeter
 ...
 }
 ```
+
+**Script args***
+
+It is also possible to passes arguments to the script with the ScriptArgs property of the options:
+```cs
+var catalog = new ScriptCsCatalog("Scripts", new ScriptCsCatalogOptions { ScriptArgs = new[] { "-loglevel", "INFO" } }
+```
+It can be helpful with the use of Script Packs.
 
 **Script Packs**
 

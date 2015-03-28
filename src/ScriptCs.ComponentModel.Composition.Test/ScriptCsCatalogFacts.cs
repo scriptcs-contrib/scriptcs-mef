@@ -21,7 +21,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // arrange
                 var scriptName = @"c:\workingdirectory\SimpleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -38,9 +38,9 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // arrange
                 var scriptName = @"c:\workingdirectory\SimpleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScriptWithoutReference).Object,
-                    null,
-                    typeof(IDoSomething));
+                    GetOptions(
+                        fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScriptWithoutReference).Object,
+                        references: new[] { typeof(IDoSomething) }));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -58,7 +58,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\DoubleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName, scriptName2 },
-                    GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -74,7 +74,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfNullPassedForScriptsFiles()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog((IEnumerable<string>)null, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog((IEnumerable<string>)null));
 
                 // assert
                 exception.ParamName.ShouldEqual("scriptFiles");
@@ -84,23 +84,23 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfNoScriptsFilesArePassed()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(new string[0],null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(new string[0]));
 
                 // assert
                 exception.ParamName.ShouldEqual("scriptFiles");
             }
 
             [Fact]
-            public void ShouldThrowExceptionIfNullPassedForFileSystem()
+            public void ShouldThrowExceptionIfNullPassedForOptions()
             {
                 // arrange
                 var scriptName = @"c:\workingdirectory\SimpleScript.csx";
 
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(new[] { scriptName }, (IFileSystem)null, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(new[] { scriptName }, null));
 
                 // assert
-                exception.ParamName.ShouldEqual("fileSystem");
+                exception.ParamName.ShouldEqual("options");
             }
 
             [Fact]
@@ -110,7 +110,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\SimpleScript.csx";
 
                 // act
-                var exception = Assert.Throws<FileNotFoundException>(() => new ScriptCsCatalog(new[] { scriptName }, GetMockFileSystem(new string[0], new string[0]).Object, null));
+                var exception = Assert.Throws<FileNotFoundException>(() => new ScriptCsCatalog(new[] { scriptName }, GetOptions(fileSystem: GetMockFileSystem(new string[0], new string[0]).Object)));
 
                 // assert
                 exception.FileName.ShouldEqual(@"c:\workingdirectory\SimpleScript.csx");
@@ -126,7 +126,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // act
                 try
                 {
-                    new ScriptCsCatalog(new[] { scriptName }, GetMockFileSystem(scriptName, Scripts.CompileExceptionScript).Object, null);
+                    new ScriptCsCatalog(new[] { scriptName }, GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.CompileExceptionScript).Object));
                 }
                 catch (Exception exception)
                 {
@@ -142,7 +142,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\Script.csx";
 
                 // act
-                var exception = Assert.Throws<Exception>(() => new ScriptCsCatalog(new[] { scriptName }, GetMockFileSystem(scriptName, Scripts.ExecutionExceptionScript).Object, null));
+                var exception = Assert.Throws<Exception>(() => new ScriptCsCatalog(new[] { scriptName }, GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.ExecutionExceptionScript).Object)));
 
                 // assert
                 exception.Message.ShouldEqual(@"Exception from script execution");
@@ -158,7 +158,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -177,7 +177,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog(@"c:\workingdirectory\_plugins",
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -195,8 +195,8 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // arrange
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScriptWithoutReference).Object,null,
-                    typeof(IDoSomething));
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScriptWithoutReference).Object,
+                     references: new[] { typeof(IDoSomething) }));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -215,7 +215,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.script";
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
                     "*.script",
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -231,17 +231,17 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfNullPassedForFileSystem()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", "*.csx", (IFileSystem)null, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", "*.csx", null));
 
                 // assert
-                exception.ParamName.ShouldEqual("fileSystem");
+                exception.ParamName.ShouldEqual("options");
             }
 
             [Fact]
             public void ShouldThrowExceptionIfNullPassedForPath()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog((string)null, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog((string)null));
 
                 // assert
                 exception.ParamName.ShouldEqual("path");
@@ -251,7 +251,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfEmptyStringPassedForPath()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(string.Empty, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog(string.Empty));
 
                 // assert
                 exception.ParamName.ShouldEqual("path");
@@ -261,7 +261,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfNullPassedForSearchPattern()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", (string)null, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", (string)null));
 
                 // assert
                 exception.ParamName.ShouldEqual("searchPattern");
@@ -271,7 +271,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfEmptyStringPassedForSearchPattern()
             {
                 // act
-                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", string.Empty, null));
+                var exception = Assert.Throws<ArgumentNullException>(() => new ScriptCsCatalog("_plugins", string.Empty));
 
                 // assert
                 exception.ParamName.ShouldEqual("searchPattern");
@@ -281,7 +281,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldThrowExceptionIfFolderDoesntExists()
             {
                 // act
-                var exception = Assert.Throws<DirectoryNotFoundException>(() => new ScriptCsCatalog("fakeFolder", GetMockFileSystem(new string[0], new string[0]).Object, null));
+                var exception = Assert.Throws<DirectoryNotFoundException>(() => new ScriptCsCatalog("fakeFolder", GetOptions(fileSystem: GetMockFileSystem(new string[0], new string[0]).Object)));
 
                 // assert
                 exception.Message.ShouldEqual(@"Scripts folder: 'c:\workingdirectory\fakeFolder' does not exist");
@@ -298,7 +298,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.ToString().ShouldEqual("ScriptCsCatalog (Path=\"\")");
@@ -312,7 +312,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.ToString().ShouldEqual("ScriptCsCatalog (Path=\"_plugins\")");
@@ -329,7 +329,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.DisplayName.ShouldEqual("ScriptCsCatalog (Path=\"\")");
@@ -343,7 +343,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.DisplayName.ShouldEqual("ScriptCsCatalog (Path=\"_plugins\")");
@@ -360,7 +360,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.Origin.ShouldBeNull();
@@ -377,7 +377,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.FullPath.ShouldBeNull();
@@ -391,7 +391,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.FullPath.ShouldEqual(@"c:\workingdirectory\_plugins");
@@ -408,7 +408,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.Path.ShouldBeNull();
@@ -422,7 +422,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.Path.ShouldEqual("_plugins");
@@ -439,7 +439,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName },
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.SearchPattern.ShouldBeNull();
@@ -453,7 +453,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.SearchPattern.ShouldEqual("*.csx");
@@ -467,7 +467,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins", "*.script",
-                    GetMockFileSystem(scriptName, Scripts.SimpleScript).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(scriptName, Scripts.SimpleScript).Object));
 
                 // assert
                 scriptCsCatalog.SearchPattern.ShouldEqual("*.script");
@@ -485,7 +485,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName, scriptName2 },
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // assert
                 scriptCsCatalog.LoadedFiles.Count.ShouldEqual(2);
@@ -502,7 +502,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // assert
                 scriptCsCatalog.LoadedFiles.Count.ShouldEqual(2);
@@ -522,7 +522,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName, scriptName2 },
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // assert
                 var enumerator = scriptCsCatalog.GetEnumerator();
@@ -547,7 +547,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
 
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new string[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
 
                 // assert
                 var enumerator = scriptCsCatalog.GetEnumerator();
@@ -573,7 +573,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, null);
+                    GetOptions(fileSystem: GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
                 scriptCsCatalog.Dispose();
 
                 // act
@@ -588,7 +588,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.csx";
                 var fileSystem = GetMockFileSystem(new string[0], new string[0]);
-                var scriptCsCatalog = new ScriptCsCatalog("_plugins", fileSystem.Object, null);
+                var scriptCsCatalog = new ScriptCsCatalog("_plugins", GetOptions(fileSystem: fileSystem.Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -614,7 +614,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // arrange
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var fileSystem = GetMockFileSystem(scriptName, Scripts.SimpleScript);
-                var scriptCsCatalog = new ScriptCsCatalog("_plugins", fileSystem.Object, null);
+                var scriptCsCatalog = new ScriptCsCatalog("_plugins", GetOptions(fileSystem: fileSystem.Object));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -635,6 +635,73 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 mefHost.Plugins.Count.ShouldEqual(1);
                 mefHost.Plugins[0].DoSomething().ShouldEqual("Double");
             }
+
+            [Fact]
+            public void ShouldRaiseOnchangedAndOnChanging()
+            {
+                // arrange
+                bool onChangedCalled = false;
+                bool onChangingCalled = false;
+                ComposablePartCatalogChangeEventArgs onChangedEventArgs = null;
+                ComposablePartCatalogChangeEventArgs onChangingEventArgs = null;
+                var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
+                var fileSystem = GetMockFileSystem(scriptName, Scripts.SimpleScript);
+                var scriptCsCatalog = new ScriptCsCatalog("_plugins", GetOptions(fileSystem: fileSystem.Object));
+                scriptCsCatalog.Changing += (object sender, ComposablePartCatalogChangeEventArgs e) =>
+                {
+                    onChangingCalled = true;
+                    onChangingEventArgs = e;
+                };
+
+                scriptCsCatalog.Changed += (object sender, ComposablePartCatalogChangeEventArgs e) =>
+                {
+                    onChangedCalled = true;
+                    onChangedEventArgs = e;
+                };
+
+                // act
+                var mefHost = GetComposedMefHost(scriptCsCatalog);
+
+                // assert
+                scriptCsCatalog.LoadedFiles.Count.ShouldEqual(1);
+                mefHost.Plugins.Count.ShouldEqual(1);
+                mefHost.Plugins[0].DoSomething().ShouldEqual("Simple");
+
+                // arrange
+                UpdateFileSystem(fileSystem, new[] { scriptName }, new[] { Scripts.DoubleScript });
+
+                // act
+                scriptCsCatalog.Refresh();
+
+                // assert
+                scriptCsCatalog.LoadedFiles.Count.ShouldEqual(1);
+                mefHost.Plugins.Count.ShouldEqual(1);
+                mefHost.Plugins[0].DoSomething().ShouldEqual("Double");
+
+                onChangingCalled.ShouldBeTrue();
+                onChangingEventArgs.ShouldNotBeNull();
+                onChangingEventArgs.AtomicComposition.ShouldNotBeNull();
+                onChangingEventArgs.AddedDefinitions.ShouldNotBeNull();
+                onChangingEventArgs.AddedDefinitions.ShouldNotBeEmpty();
+                onChangingEventArgs.AddedDefinitions.Count().ShouldEqual(1);
+                onChangingEventArgs.AddedDefinitions.First().ToString().ShouldEqual("Submission#0+DoubleSomething");
+                onChangingEventArgs.RemovedDefinitions.ShouldNotBeNull();
+                onChangingEventArgs.RemovedDefinitions.ShouldNotBeEmpty();
+                onChangingEventArgs.RemovedDefinitions.Count().ShouldEqual(1);
+                onChangingEventArgs.RemovedDefinitions.First().ToString().ShouldEqual("Submission#0+SimpleSomething");
+
+                onChangedCalled.ShouldBeTrue();
+                onChangedEventArgs.ShouldNotBeNull();
+                onChangedEventArgs.AtomicComposition.ShouldBeNull();
+                onChangedEventArgs.AddedDefinitions.ShouldNotBeNull();
+                onChangedEventArgs.AddedDefinitions.ShouldNotBeEmpty();
+                onChangedEventArgs.AddedDefinitions.Count().ShouldEqual(1);
+                onChangedEventArgs.AddedDefinitions.First().ToString().ShouldEqual("Submission#0+DoubleSomething");
+                onChangedEventArgs.RemovedDefinitions.ShouldNotBeNull();
+                onChangedEventArgs.RemovedDefinitions.ShouldNotBeEmpty();
+                onChangedEventArgs.RemovedDefinitions.Count().ShouldEqual(1);
+                onChangedEventArgs.RemovedDefinitions.First().ToString().ShouldEqual("Submission#0+SimpleSomething");
+            }
         }
 
         private static MEFHost GetComposedMefHost(ScriptCsCatalog catalog)
@@ -649,6 +716,16 @@ namespace ScriptCs.ComponentModel.Composition.Test
             container.Compose(batch);
 
             return mefHost;
+        }
+
+        private static ScriptCsCatalogOptions GetOptions(string[] scriptArgs = null, Type[] references = null, IFileSystem fileSystem = null)
+        {
+            return new ScriptCsCatalogOptions
+            {
+                FileSystem = fileSystem,
+                References = references,
+                ScriptArgs = scriptArgs
+            };
         }
 
         private static Mock<IFileSystem> GetMockFileSystem(string fileName, string fileContent)

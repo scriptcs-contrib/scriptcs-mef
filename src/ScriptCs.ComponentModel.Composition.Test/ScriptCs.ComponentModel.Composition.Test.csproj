@@ -45,6 +45,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ScriptCs.Contracts.0.14.0\lib\net45\ScriptCs.Contracts.dll</HintPath>
     </Reference>
+    <Reference Include="ScriptCs.Core, Version=0.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ScriptCs.Core.0.14.0\lib\net45\ScriptCs.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Should, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Should.1.1.20\lib\Should.dll</HintPath>
       <Private>True</Private>
@@ -74,6 +78,7 @@
     <Compile Include="MEFHost.cs" />
     <Compile Include="ScriptCsCatalogFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptCsCatalogOptionsFacts.cs" />
     <Compile Include="Scripts.cs" />
   </ItemGroup>
   <ItemGroup>
