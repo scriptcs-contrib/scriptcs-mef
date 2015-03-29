@@ -384,7 +384,6 @@ namespace ScriptCs.ComponentModel.Composition
         {
             Path = path;
             FullPath = GetFullPath(path);
-            _options.FileSystem.CurrentDirectory = FullPath;
 
             SearchPattern = searchPattern;
 
