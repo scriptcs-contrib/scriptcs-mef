@@ -53,7 +53,7 @@ public class MyGreeter : IGreeter
 }
 ```
 
-**Script args***
+**Script args**
 
 It is also possible to passes arguments to the script with the ScriptArgs property of the options:
 ```cs
