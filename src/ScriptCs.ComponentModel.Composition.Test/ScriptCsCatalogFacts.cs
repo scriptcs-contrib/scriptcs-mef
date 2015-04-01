@@ -528,13 +528,13 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var enumerator = scriptCsCatalog.GetEnumerator();
                 enumerator.ShouldNotBeNull();
                 enumerator.Current.ShouldBeNull();
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeTrue();
                 enumerator.Current.ShouldNotBeNull();
                 enumerator.Current.ToString().ShouldEqual("Submission#0+SimpleSomething");
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeTrue();
                 enumerator.Current.ShouldNotBeNull();
                 enumerator.Current.ToString().ShouldEqual("Submission#0+DoubleSomething");
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeFalse();
                 enumerator.Current.ShouldBeNull();
             }
 
@@ -553,14 +553,28 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var enumerator = scriptCsCatalog.GetEnumerator();
                 enumerator.ShouldNotBeNull();
                 enumerator.Current.ShouldBeNull();
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeTrue();
                 enumerator.Current.ShouldNotBeNull();
                 enumerator.Current.ToString().ShouldEqual("Submission#0+SimpleSomething");
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeTrue();
                 enumerator.Current.ShouldNotBeNull();
                 enumerator.Current.ToString().ShouldEqual("Submission#0+DoubleSomething");
-                enumerator.MoveNext();
+                enumerator.MoveNext().ShouldBeFalse();
                 enumerator.Current.ShouldBeNull();
+            }
+
+            [Fact]
+            public void ShouldNotThrowExceptionIfFolderProvidedIsEmpty()
+            {
+                // act
+                var scriptCsCatalog = new ScriptCsCatalog("_plugins",
+                    GetOptions(fileSystem: GetMockFileSystem(new string[0], new string[0]).Object));
+
+                // assert
+                var enumerator = scriptCsCatalog.GetEnumerator();
+                enumerator.ShouldNotBeNull();
+                enumerator.Current.ShouldBeNull();
+                enumerator.MoveNext().ShouldBeFalse();
             }
         }
 

@@ -228,7 +228,7 @@ namespace ScriptCs.ComponentModel.Composition
         /// <returns></returns>
         public override IEnumerable<Tuple<ComposablePartDefinition, ExportDefinition>> GetExports(ImportDefinition definition)
         {
-            return _catalog == null ? Enumerable.Empty<Tuple<ComposablePartDefinition, ExportDefinition>>() : _catalog.GetExports(definition);
+            return _catalog.GetExports(definition);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace ScriptCs.ComponentModel.Composition
                 // Notify listeners to give them a preview before completing the changes
                 addedDefinitions = newCatalog.ToArray();
 
-                removedDefinitions = _catalog == null ? new ComposablePartDefinition[0] : _catalog.ToArray();
+                removedDefinitions = _catalog.ToArray();
 
                 using (var atomicComposition = new AtomicComposition())
                 {
@@ -470,11 +470,8 @@ namespace ScriptCs.ComponentModel.Composition
                 builder.AppendFormat("#load {0}{1}", script, Environment.NewLine);
             }
 
-            if (builder.Length != 0)
-            {
-                builder.AppendLine("public class Marker {}");
-                builder.AppendLine("typeof(Marker)");
-            }
+            builder.AppendLine("public class Marker {}");
+            builder.AppendLine("typeof(Marker)");
 
             return builder.ToString();
         }

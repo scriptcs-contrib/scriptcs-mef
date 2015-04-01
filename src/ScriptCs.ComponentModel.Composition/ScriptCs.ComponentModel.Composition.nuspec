@@ -10,8 +10,9 @@
         <projectUrl>https://github.com/scriptcs-contrib/scriptcs-mef</projectUrl>
         <iconUrl>https://cdn.rawgit.com/scriptcs-contrib/scriptcs-mef/master/icon.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>ScriptCs.ComponentModel.Composition provide a ScriptCsCatalog to extend an application with the power of MEF and ScriptCs</description>
+        <description>ScriptCs.ComponentModel.Composition provide a ScriptCsCatalog to extend an application with the power of MEF and ScriptCs.</description>
         <tags>scriptcs, script, csx, mef, scriptcscatalog</tags>
+        <releaseNotes>Fix NullReference when the specified folder is empty.</releaseNotes>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
         </frameworkAssemblies>
