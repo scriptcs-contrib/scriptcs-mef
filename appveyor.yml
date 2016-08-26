@@ -28,6 +28,7 @@ build:
 
 after_build:
   - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
+  - NVika parsereport "inspectcodereport.xml" --debug --includesource
 # build nuget package
   - mkdir NugetAssets
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
