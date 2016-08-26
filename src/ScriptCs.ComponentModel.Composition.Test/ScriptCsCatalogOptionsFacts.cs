@@ -109,14 +109,15 @@ namespace ScriptCs.ComponentModel.Composition.Test
             public void ShouldNotOverridesValuedFileSystem()
             {
                 // arrange
-                var options = new ScriptCsCatalogOptions { FileSystem = new Mock<IFileSystem>().Object };
+                var fileSystemMock = new Mock<IFileSystem>().Object;
+                var options = new ScriptCsCatalogOptions { FileSystem = fileSystemMock };
 
                 // act
                 var result = options.OverridesNullByDefault();
 
                 // assert
                 result.FileSystem.ShouldNotBeNull();
-                result.FileSystem.GetType().Name.ShouldEqual("IFileSystemProxy");
+                result.FileSystem.ShouldEqual(fileSystemMock);
             }
         }
     }
