@@ -23,13 +23,19 @@ namespace ScriptCs.ComponentModel.Composition
         /// </summary>
         public IFileSystem FileSystem { get; set; }
 
+        /// <summary>
+        /// Modules to load in scripts.
+        /// </summary>
+        public string[] Modules { get; set; }
+
         internal ScriptCsCatalogOptions OverridesNullByDefault()
         {
             return new ScriptCsCatalogOptions
             {
                 References = References,
                 ScriptArgs = ScriptArgs ?? new string[0],
-                FileSystem = FileSystem ?? new FileSystem()
+                FileSystem = FileSystem ?? new FileSystem(),
+                Modules = Modules ?? new string[0]
             };
         }
     }

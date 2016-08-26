@@ -1,6 +1,4 @@
 ﻿using ScriptCs.Contracts;
-using ScriptCs.Engine.Mono;
-using ScriptCs.Engine.Roslyn;
 using ScriptCs.Hosting;
 using System;
 using System.Collections.Generic;
@@ -26,7 +24,6 @@ namespace ScriptCs.ComponentModel.Composition
         private bool _isDisposed;
         private AssemblyCatalog _catalog;
         private ReadOnlyCollection<string> _loadedFiles;
-        private static bool _resolverInitialized;
 
         /// <summary>
         ///     Translated absolute path of the path passed into the constructor of <see cref="DirectoryCatalog"/>.
@@ -161,7 +158,7 @@ namespace ScriptCs.ComponentModel.Composition
 
             _options = options.OverridesNullByDefault();
 
-            Initialize(path, searchPattern, options);
+            Initialize(path, searchPattern);
         }
 
         /// <summary>
@@ -198,7 +195,7 @@ namespace ScriptCs.ComponentModel.Composition
 
             _options = options.OverridesNullByDefault();
 
-            Initialize(scriptFiles, options);
+            Initialize(scriptFiles);
         }
 
         /// <summary>
@@ -380,7 +377,7 @@ namespace ScriptCs.ComponentModel.Composition
             }
         }
 
-        private void Initialize(string path, string searchPattern, ScriptCsCatalogOptions options)
+        private void Initialize(string path, string searchPattern)
         {
             Path = path;
             FullPath = GetFullPath(path);
@@ -393,7 +390,7 @@ namespace ScriptCs.ComponentModel.Composition
             _catalog = ExecuteScripts(scriptFiles);
         }
 
-        private void Initialize(IEnumerable<string> scriptFiles, ScriptCsCatalogOptions options)
+        private void Initialize(IEnumerable<string> scriptFiles)
         {
             foreach (var scriptFile in scriptFiles)
             {
@@ -478,24 +475,17 @@ namespace ScriptCs.ComponentModel.Composition
 
         private ScriptServices CreateScriptServices()
         {
-            Type engine = (Type.GetType("Mono.Runtime") != null) ? GetMonoEngineType() : GetRoslynEngineType();
-
             var console = new ScriptConsole();
-            var configurator = new LoggerConfigurator(LogLevel.Info);
-            configurator.Configure(console);
-            var logger = configurator.GetLogger();
-            var scriptServicesBuilder = new ScriptServicesBuilder(console, logger);
-            scriptServicesBuilder.Overrides[typeof(IScriptEngine)] = engine;
+            var logProvider = new ColoredConsoleLogProvider(LogLevel.Info, console);
+
+            var initializationServices = new InitializationServices(logProvider);
+            initializationServices.GetAppDomainAssemblyResolver().Initialize();
+
+            var scriptServicesBuilder = new ScriptServicesBuilder(console, logProvider, null, null, initializationServices);
             scriptServicesBuilder.Overrides[typeof(IFileSystem)] = _options.FileSystem;
-            // FixMe replace by .LoadScriptPacks(); when ScriptCs.Hosting v0.15 will be available
-            scriptServicesBuilder.ScriptName(String.Empty);
-
-            if (!_resolverInitialized)
-            {
-                scriptServicesBuilder.InitializationServices.GetAppDomainAssemblyResolver().Initialize();
-                _resolverInitialized = true;
-            }
-
+            scriptServicesBuilder.LoadScriptPacks();
+            scriptServicesBuilder.LoadModules(".csx", _options.Modules);
+            
             var scriptServices = scriptServicesBuilder.Build();
 
             var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(_options.FileSystem.CurrentDirectory, true);
@@ -510,16 +500,6 @@ namespace ScriptCs.ComponentModel.Composition
             }
 
             return scriptServices;
-        }
-
-        private static Type GetRoslynEngineType()
-        {
-            return typeof(RoslynScriptEngine);
-        }
-
-        private static Type GetMonoEngineType()
-        {
-            return typeof(MonoScriptEngine);
         }
     }
 }
