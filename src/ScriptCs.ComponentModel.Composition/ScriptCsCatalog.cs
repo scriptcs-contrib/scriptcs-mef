@@ -335,30 +335,27 @@ namespace ScriptCs.ComponentModel.Composition
         {
             try
             {
-                if (disposing)
+                if (disposing && !_isDisposed)
                 {
-                    if (!_isDisposed)
-                    {
-                        AssemblyCatalog catalogs = null;
+                    AssemblyCatalog catalogs = null;
 
-                        try
+                    try
+                    {
+                        lock (_thisLock)
                         {
-                            lock (_thisLock)
+                            if (!_isDisposed)
                             {
-                                if (!_isDisposed)
-                                {
-                                    catalogs = _catalog;
-                                    _catalog = null;
-                                    _isDisposed = true;
-                                }
+                                catalogs = _catalog;
+                                _catalog = null;
+                                _isDisposed = true;
                             }
                         }
-                        finally
+                    }
+                    finally
+                    {
+                        if (catalogs != null)
                         {
-                            if (catalogs != null)
-                            {
-                                catalogs.Dispose();
-                            }
+                            catalogs.Dispose();
                         }
                     }
                 }
