@@ -12,12 +12,12 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>ScriptCs.ComponentModel.Composition provide a ScriptCsCatalog to extend an application with the power of MEF and ScriptCs.</description>
         <tags>scriptcs, script, csx, mef, scriptcscatalog</tags>
-        <releaseNotes>Fix NullReference when the specified folder is empty.</releaseNotes>
+        <releaseNotes>Fix non updated nuget dependency.</releaseNotes>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
         </frameworkAssemblies>
         <dependencies>
-            <dependency id="ScriptCs.Hosting" version="0.14.0" />
+            <dependency id="ScriptCs.Hosting" version="0.16.1" />
         </dependencies>
     </metadata>
     <files>
