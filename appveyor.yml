@@ -42,11 +42,11 @@ artifacts:
   - path: src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
     name: ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
 
-  - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.nupkg
-    name: ScriptCs.ComponentModel.Composition.nupkg
-
   - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.symbols.nupkg
     name: ScriptCs.ComponentModel.Composition.symbols.nupkg
+
+  - path: NugetAssets\ScriptCs.ComponentModel.Composition.*.nupkg
+    name: ScriptCs.ComponentModel.Composition.nupkg
 
 deploy:
   - provider: NuGet
