@@ -404,30 +404,33 @@ namespace ScriptCs.ComponentModel.Composition
 
         private AssemblyCatalog ExecuteScripts(IEnumerable<string> scriptFiles)
         {
+            AssemblyCatalog catalog = null;
+
             var services = CreateScriptServices();
 
-            var loader = GetLoader(scriptFiles);
-
-            var result = services.Executor.ExecuteScript(loader);
-
-            if (result.CompileExceptionInfo != null)
+            foreach (var scriptFile in scriptFiles)
             {
-                result.CompileExceptionInfo.Throw();
+                var loader = GetLoader(scriptFile);
+
+                var result = services.Executor.ExecuteScript(loader);
+
+                if (result.CompileExceptionInfo != null)
+                {
+                    result.CompileExceptionInfo.Throw();
+                }
+
+                if (result.ExecuteExceptionInfo != null)
+                {
+                    result.ExecuteExceptionInfo.Throw();
+                }
+
+                var marker = result.ReturnValue as Type;
+
+                if (marker != null && catalog == null)
+                {
+                    catalog = new AssemblyCatalog(marker.Assembly, this);
+                }
             }
-
-            if (result.ExecuteExceptionInfo != null)
-            {
-                result.ExecuteExceptionInfo.Throw();
-            }
-
-            var marker = result.ReturnValue as Type;
-
-            AssemblyCatalog catalog = null;
-            if (marker != null)
-            {
-                catalog = new AssemblyCatalog(marker.Assembly, this);
-            }
-
             return catalog;
         }
 
@@ -456,14 +459,11 @@ namespace ScriptCs.ComponentModel.Composition
             return string.Format(CultureInfo.CurrentCulture, "{0} (Path=\"{1}\")", GetType().Name, Path);
         }
 
-        private string GetLoader(IEnumerable<string> scriptFiles)
+        private string GetLoader(string scriptFile)
         {
             var builder = new StringBuilder();
-            foreach (var script in scriptFiles)
-            {
-                builder.AppendFormat("#load {0}{1}", script, Environment.NewLine);
-            }
 
+            builder.AppendFormat("#load {0}{1}", scriptFile, Environment.NewLine);
             builder.AppendLine("public class Marker {}");
             builder.AppendLine("typeof(Marker)");
 
