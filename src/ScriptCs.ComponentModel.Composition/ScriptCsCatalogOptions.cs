@@ -28,6 +28,11 @@ namespace ScriptCs.ComponentModel.Composition
         /// </summary>
         public string[] Modules { get; set; }
 
+        /// <summary>
+        /// Prevents the scripts from beeing merged.
+        /// </summary>
+        public bool KeepScriptsSeparated { get; set; }
+
         internal ScriptCsCatalogOptions OverridesNullByDefault()
         {
             return new ScriptCsCatalogOptions
@@ -35,7 +40,8 @@ namespace ScriptCs.ComponentModel.Composition
                 References = References,
                 ScriptArgs = ScriptArgs ?? new string[0],
                 FileSystem = FileSystem ?? new FileSystem(),
-                Modules = Modules ?? new string[0]
+                Modules = Modules ?? new string[0],
+                KeepScriptsSeparated = KeepScriptsSeparated
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿using ScriptCs.Contracts;
+using ScriptCs.Contracts;
 using ScriptCs.Hosting;
 using System;
 using System.Collections.Generic;
@@ -406,8 +406,33 @@ namespace ScriptCs.ComponentModel.Composition
         {
             var services = CreateScriptServices();
 
-            var loader = GetLoader(scriptFiles);
+            ScriptResult result = null;
+            if (_options.KeepScriptsSeparated)
+            {
+                foreach (var scriptFile in scriptFiles)
+                {
+                    var loader = GetLoader(new[] { scriptFile });
+                    result = ExecuteScript(services, loader);
+                }
+            }
+            else
+            {
+                var loader = GetLoader(scriptFiles);
+                result = ExecuteScript(services, loader);
+            }
 
+            AssemblyCatalog catalog = null;
+            var marker = result.ReturnValue as Type;
+            if (marker != null)
+            {
+                catalog = new AssemblyCatalog(marker.Assembly, this);
+            }
+
+            return catalog;
+        }
+
+        private ScriptResult ExecuteScript(ScriptServices services, string loader)
+        {
             var result = services.Executor.ExecuteScript(loader);
 
             if (result.CompileExceptionInfo != null)
@@ -420,15 +445,7 @@ namespace ScriptCs.ComponentModel.Composition
                 result.ExecuteExceptionInfo.Throw();
             }
 
-            var marker = result.ReturnValue as Type;
-
-            AssemblyCatalog catalog = null;
-            if (marker != null)
-            {
-                catalog = new AssemblyCatalog(marker.Assembly, this);
-            }
-
-            return catalog;
+            return result;
         }
 
         private string GetFullPath(string path)
@@ -459,11 +476,11 @@ namespace ScriptCs.ComponentModel.Composition
         private string GetLoader(IEnumerable<string> scriptFiles)
         {
             var builder = new StringBuilder();
-            foreach (var script in scriptFiles)
-            {
-                builder.AppendFormat("#load {0}{1}", script, Environment.NewLine);
-            }
 
+            foreach (var scriptFile in scriptFiles)
+            {
+                builder.AppendFormat("#load {0}{1}", scriptFile, Environment.NewLine);
+            }
             builder.AppendLine("public class Marker {}");
             builder.AppendLine("typeof(Marker)");
 
