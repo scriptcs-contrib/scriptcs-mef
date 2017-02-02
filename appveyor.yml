@@ -30,8 +30,11 @@ after_build:
   - mkdir NugetAssets
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
 
-test_script:
-  - ps: .\RunTests.ps1
+test:
+  - OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"$env:xunit20\xunit.console.x86.exe" -targetargs:"`"src\ScriptCs.ComponentModel.Composition.Test\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll`" -noshadow -appveyor" -output:coverage.xml -returntargetcode
+
+after_test:
+  - codecov -f coverage.xml
 
 artifacts:
   - path: inspectcodereport.xml
