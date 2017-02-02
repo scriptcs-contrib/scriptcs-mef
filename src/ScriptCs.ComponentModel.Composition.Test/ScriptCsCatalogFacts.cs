@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using ScriptCs.Contracts;
 using Should;
 using System;
@@ -59,6 +59,25 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var scriptName2 = @"c:\workingdirectory\DoubleScript.csx";
                 var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName, scriptName2 },
                     GetOptions(fileSystem: GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object));
+
+                // act
+                var mefHost = GetComposedMefHost(scriptCsCatalog);
+
+                // assert
+                mefHost.Plugins.ShouldNotBeNull();
+                mefHost.Plugins.Count.ShouldEqual(2);
+                mefHost.Plugins[0].DoSomething().ShouldEqual("Simple");
+                mefHost.Plugins[1].DoSomething().ShouldEqual("Double");
+            }
+
+            [Fact]
+            public void ShouldWorkWithMultipleScriptsNotMerged()
+            {
+                // arrange
+                var scriptName = @"c:\workingdirectory\SimpleScript.csx";
+                var scriptName2 = @"c:\workingdirectory\DoubleScript.csx";
+                var scriptCsCatalog = new ScriptCsCatalog(new[] { scriptName, scriptName2 },
+                    GetOptions(fileSystem: GetMockFileSystem(new[] { scriptName, scriptName2 }, new[] { Scripts.SimpleScript, Scripts.DoubleScript }).Object, keepScriptsSeparated: true));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);
@@ -732,13 +751,14 @@ namespace ScriptCs.ComponentModel.Composition.Test
             return mefHost;
         }
 
-        private static ScriptCsCatalogOptions GetOptions(string[] scriptArgs = null, Type[] references = null, IFileSystem fileSystem = null)
+        private static ScriptCsCatalogOptions GetOptions(string[] scriptArgs = null, Type[] references = null, IFileSystem fileSystem = null, bool keepScriptsSeparated = false)
         {
             return new ScriptCsCatalogOptions
             {
                 FileSystem = fileSystem,
                 References = references,
-                ScriptArgs = scriptArgs
+                ScriptArgs = scriptArgs,
+                KeepScriptsSeparated = keepScriptsSeparated
             };
         }
 
