@@ -57,16 +57,27 @@ public class MyGreeter : IGreeter
 
 It is also possible to passes arguments to the script with the ScriptArgs property of the options:
 ```cs
-var catalog = new ScriptCsCatalog("Scripts", new ScriptCsCatalogOptions { ScriptArgs = new[] { "-loglevel", "INFO" } }
+var catalog = new ScriptCsCatalog("Scripts", new ScriptCsCatalogOptions { ScriptArgs = new[] { "-loglevel", "INFO" } });
 ```
 It can be helpful with the use of Script Packs.
 
 **Script Packs**
 
-Script Packs can be used the location varies depending on the approach used:
+Script Packs can be used, the location varies depending on the approach used:
  - script by script: the packages location is the current directory of your application
  - folder: the packages location is the folder specified
 
+**Load script one by one**
+
+By default all scripts are loaded in one file to be interpreted by ScriptCS, but it can be source of issues like when [alias are used](https://github.com/scriptcs-contrib/scriptcs-mef/issues/10).
+
+The `KeepScriptsSeparated` option allow to load script one by one and remove these issues:
+
+```cs
+var catalog = new ScriptCsCatalog("Scripts", new ScriptCsCatalogOptions { KeepScriptsSeparated = true });
+```
+
 ## Contributors
 
-Thanks to [Glenn Block](https://github.com/glennblock) Script Packs can be used!
+Thanks to [Glenn Block](https://github.com/glennblock) Script Packs can be used!  
+Thanks to [beolutz](https://github.com/beolutz) for the custom file system support and KeepScriptsSeparated option.
