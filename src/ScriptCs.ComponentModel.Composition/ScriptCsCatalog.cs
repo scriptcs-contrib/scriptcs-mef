@@ -492,7 +492,7 @@ namespace ScriptCs.ComponentModel.Composition
             var console = new ScriptConsole();
             var logProvider = new ColoredConsoleLogProvider(LogLevel.Info, console);
 
-            var initializationServices = new InitializationServices(logProvider);
+            var initializationServices = new InitializationServices(logProvider, new Dictionary<Type, object> { { typeof(IFileSystem), _options.FileSystem } });
             initializationServices.GetAppDomainAssemblyResolver().Initialize();
 
             var scriptServicesBuilder = new ScriptServicesBuilder(console, logProvider, null, null, initializationServices);
