@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using ScriptCs.Contracts;
 using Should;
 using System;
@@ -120,8 +120,8 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 result.FileSystem.ShouldNotBeNull();
                 result.FileSystem.ShouldEqual(fileSystemMock);
             }
-            
-            
+
+
             [Fact]
             public void ShouldNotOverridesValuedKeepScriptsSeparated()
             {
@@ -132,7 +132,21 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var result = options.OverridesNullByDefault();
 
                 // assert
-                result.KeepScriptsSeparated.ShouldEqual(true);
+                result.KeepScriptsSeparated.ShouldBeTrue();
+            }
+
+        }
+
+        public class DefaultValues
+        {
+            [Fact]
+            public void KeepScriptsSeparatedShouldBeFalse()
+            {
+                // act
+                var options = new ScriptCsCatalogOptions();
+
+                // assert
+                options.KeepScriptsSeparated.ShouldBeFalse();
             }
         }
     }
