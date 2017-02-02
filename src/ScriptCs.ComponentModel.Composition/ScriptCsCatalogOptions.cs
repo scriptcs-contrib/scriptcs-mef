@@ -28,6 +28,11 @@ namespace ScriptCs.ComponentModel.Composition
         /// </summary>
         public string[] Modules { get; set; }
 
+        /// <summary>
+        /// Prevents the scripts from beeing merged.
+        /// </summary>
+        public bool KeepScriptsSeparated { get; set; }
+
         internal ScriptCsCatalogOptions OverridesNullByDefault()
         {
             return new ScriptCsCatalogOptions
