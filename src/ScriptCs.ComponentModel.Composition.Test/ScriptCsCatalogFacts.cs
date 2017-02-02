@@ -725,9 +725,6 @@ namespace ScriptCs.ComponentModel.Composition.Test
             var batch = new CompositionBatch();
             var mefHost = new MEFHost();
             batch.AddPart(mefHost);
-
-            fileSystem.SetupGet(f => f.GlobalFolder).Returns(Environment.CurrentDirectory);
-            fileSystem.SetupGet(f => f.HostBin).Returns(Environment.CurrentDirectory);
             // act
             container.Compose(batch);
 
