@@ -57,6 +57,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 var options = new ScriptCsCatalogOptions { ScriptArgs = null };
 
                 // act
+
                 var result = options.OverridesNullByDefault();
 
                 // assert
@@ -118,6 +119,20 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 // assert
                 result.FileSystem.ShouldNotBeNull();
                 result.FileSystem.ShouldEqual(fileSystemMock);
+            }
+            
+            
+            [Fact]
+            public void ShouldNotOverridesValuedKeepScriptsSeparated()
+            {
+                // arrange
+                var options = new ScriptCsCatalogOptions { KeepScriptsSeparated = true };
+
+                // act
+                var result = options.OverridesNullByDefault();
+
+                // assert
+                result.KeepScriptsSeparated.ShouldEqual(true);
             }
         }
     }
