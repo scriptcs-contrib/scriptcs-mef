@@ -7,17 +7,14 @@ install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
   - choco install resharper-clt -y
   - choco install opencover.portable -y
-  - choco install coveralls.io -source https://nuget.org/api/v2/ -y
   - choco install nvika -y
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
 
-#cache:
-#  - packages -> **\packages.config
-#  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
-#  - C:\ProgramData\chocolatey\lib -> appveyor.yml
-
-environment:
-  COVERALLS_REPO_TOKEN:
-    secure: mzA3KujNlhtanIr2YQn90ZQdEQm1dGB9UJrgrZexSySIYHwUszIT2XYv37tuqDsF
+cache:
+- src/packages -> **\packages.config
+- C:\ProgramData\chocolatey\bin -> appveyor.yml
+- C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 before_build:
   - nuget restore src
