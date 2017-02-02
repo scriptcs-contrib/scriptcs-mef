@@ -40,7 +40,8 @@ namespace ScriptCs.ComponentModel.Composition
                 References = References,
                 ScriptArgs = ScriptArgs ?? new string[0],
                 FileSystem = FileSystem ?? new FileSystem(),
-                Modules = Modules ?? new string[0]
+                Modules = Modules ?? new string[0],
+                KeepScriptsSeparated = KeepScriptsSeparated
             };
         }
     }
