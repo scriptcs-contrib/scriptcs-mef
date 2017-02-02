@@ -754,7 +754,7 @@ namespace ScriptCs.ComponentModel.Composition.Test
             fileSystem.SetupGet(f => f.BinFolder).Returns("scriptcs_bin");
             fileSystem.SetupGet(f => f.DllCacheFolder).Returns(".scriptcs_cache");
             fileSystem.SetupGet(f => f.NugetFile).Returns("scriptcs_nuget.config");
-            fileSystem.SetupGet(f => f.GlobalFolder).Returns(Environment.CurrentDirectory);
+            fileSystem.SetupGet(f => f.GlobalFolder).Returns(@"c:\workingdirectory");
             fileSystem.SetupGet(f => f.HostBin).Returns(Environment.CurrentDirectory);
             fileSystem.SetupGet(f => f.CurrentDirectory).Returns(@"c:\workingdirectory");
             fileSystem.Setup(f => f.GetWorkingDirectory(It.IsAny<string>())).Returns(@"c:\workingdirectory");
