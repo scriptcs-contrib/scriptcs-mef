@@ -3,6 +3,7 @@ if($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null) {
     if ($lastExitCode -ne 0)
     {
         Write-Error "Tests have failed"
+        exit -1
     }
     Write-Information "Tests ok"
     coveralls.net --opencover coverage.xml
@@ -13,6 +14,7 @@ else
     if ($lastExitCode -ne 0)
     {
         Write-Error "Tests have failed"
+        exit -1
     }
     Write-Information "Tests ok"
 }
