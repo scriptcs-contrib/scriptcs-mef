@@ -12,7 +12,13 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>ScriptCs.ComponentModel.Composition provide a ScriptCsCatalog to extend an application with the power of MEF and ScriptCs.</description>
         <tags>scriptcs, script, csx, mef, scriptcscatalog</tags>
-        <releaseNotes>Fix non updated nuget dependency.</releaseNotes>
+        <releaseNotes>Fix:
+ - custom file system support
+
+Enhancement:
+ - add an option to load the script one by one
+
+Thanks a lot to beolutz.</releaseNotes>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
         </frameworkAssemblies>
