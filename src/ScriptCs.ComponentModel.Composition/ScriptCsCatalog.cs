@@ -1,4 +1,4 @@
-﻿using ScriptCs.Contracts;
+using ScriptCs.Contracts;
 using ScriptCs.Hosting;
 using System;
 using System.Collections.Generic;
@@ -404,34 +404,48 @@ namespace ScriptCs.ComponentModel.Composition
 
         private AssemblyCatalog ExecuteScripts(IEnumerable<string> scriptFiles)
         {
-            AssemblyCatalog catalog = null;
-
             var services = CreateScriptServices();
 
-            foreach (var scriptFile in scriptFiles)
+            ScriptResult result = null;
+            if (_options.KeepScriptsSeparated)
             {
-                var loader = GetLoader(scriptFile);
-
-                var result = services.Executor.ExecuteScript(loader);
-
-                if (result.CompileExceptionInfo != null)
+                foreach (var scriptFile in scriptFiles)
                 {
-                    result.CompileExceptionInfo.Throw();
-                }
-
-                if (result.ExecuteExceptionInfo != null)
-                {
-                    result.ExecuteExceptionInfo.Throw();
-                }
-
-                var marker = result.ReturnValue as Type;
-
-                if (marker != null && catalog == null)
-                {
-                    catalog = new AssemblyCatalog(marker.Assembly, this);
+                    var loader = GetLoader(new[] { scriptFile });
+                    result = ExecuteScript(services, loader);
                 }
             }
+            else
+            {
+                var loader = GetLoader(scriptFiles);
+                result = ExecuteScript(services, loader);
+            }
+
+            AssemblyCatalog catalog = null;
+            var marker = result.ReturnValue as Type;
+            if (marker != null)
+            {
+                catalog = new AssemblyCatalog(marker.Assembly, this);
+            }
+
             return catalog;
+        }
+
+        private ScriptResult ExecuteScript(ScriptServices services, string loader)
+        {
+            var result = services.Executor.ExecuteScript(loader);
+
+            if (result.CompileExceptionInfo != null)
+            {
+                result.CompileExceptionInfo.Throw();
+            }
+
+            if (result.ExecuteExceptionInfo != null)
+            {
+                result.ExecuteExceptionInfo.Throw();
+            }
+
+            return result;
         }
 
         private string GetFullPath(string path)
@@ -459,11 +473,14 @@ namespace ScriptCs.ComponentModel.Composition
             return string.Format(CultureInfo.CurrentCulture, "{0} (Path=\"{1}\")", GetType().Name, Path);
         }
 
-        private string GetLoader(string scriptFile)
+        private string GetLoader(IEnumerable<string> scriptFiles)
         {
             var builder = new StringBuilder();
 
-            builder.AppendFormat("#load {0}{1}", scriptFile, Environment.NewLine);
+            foreach (var scriptFile in scriptFiles)
+            {
+                builder.AppendFormat("#load {0}{1}", scriptFile, Environment.NewLine);
+            }
             builder.AppendLine("public class Marker {}");
             builder.AppendLine("typeof(Marker)");
 
