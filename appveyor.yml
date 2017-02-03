@@ -5,7 +5,6 @@ init:
   
 install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
-  - choco install resharper-clt -y
   - choco install opencover.portable -y
   - choco install coveralls.io -source https://nuget.org/api/v2/ -y
   - choco install nvika -y
@@ -27,8 +26,7 @@ build:
   verbosity: minimal
 
 after_build:
-  - inspectcode /o="inspectcodereport.xml" "src/ScriptCs.ComponentModel.Composition.sln"
-  - NVika parsereport "inspectcodereport.xml" --debug --includesource
+  - NVika parsereport "src\ScriptCs.ComponentModel.Composition\bin\Release\static-analysis.sarif.json" --debug --includesource
 # build nuget package
   - mkdir NugetAssets
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
@@ -37,7 +35,8 @@ test_script:
   - ps: .\RunTests.ps1
 
 artifacts:
-  - path: inspectcodereport.xml
+  - path: src\ScriptCs.ComponentModel.Composition\bin\Release\static-analysis.sarif.json
+    name: static-analysis.sarif.json
 
   - path: src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
     name: ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
