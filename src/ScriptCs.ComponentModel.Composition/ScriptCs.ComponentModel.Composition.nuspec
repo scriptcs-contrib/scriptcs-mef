@@ -18,7 +18,9 @@
 Enhancement:
  - add an option to load the script one by one
 
-Thanks a lot to beolutz.</releaseNotes>
+Thanks a lot to beolutz.
+
+patch 1: fix null reference when KeepScriptsSeparated is used without any script file.</releaseNotes>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.ComponentModel.Composition" targetFramework="net45" />
         </frameworkAssemblies>
