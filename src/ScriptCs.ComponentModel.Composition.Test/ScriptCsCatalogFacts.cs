@@ -582,12 +582,15 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 enumerator.Current.ShouldBeNull();
             }
 
-            [Fact]
-            public void ShouldNotThrowExceptionIfFolderProvidedIsEmpty()
+            [Theory]
+            [InlineData(false)]
+            [InlineData(true)]
+            public void ShouldNotThrowExceptionIfFolderProvidedIsEmpty(bool keepScriptSeparated)
             {
                 // act
                 var scriptCsCatalog = new ScriptCsCatalog("_plugins",
-                    GetOptions(fileSystem: GetMockFileSystem(new string[0], new string[0]).Object));
+                    GetOptions(fileSystem: GetMockFileSystem(new string[0], new string[0]).Object,
+                               keepScriptsSeparated: keepScriptSeparated));
 
                 // assert
                 var enumerator = scriptCsCatalog.GetEnumerator();
@@ -614,14 +617,17 @@ namespace ScriptCs.ComponentModel.Composition.Test
                 exception.ObjectName.ShouldEqual("ScriptCsCatalog");
             }
 
-            [Fact]
-            public void ShouldRefreshPartsIfScriptsAreAdded()
+            [Theory]
+            [InlineData(false)]
+            [InlineData(true)]
+            public void ShouldRefreshPartsIfScriptsAreAdded(bool keepScriptSeparated)
             {
                 // arrange
                 var scriptName = @"c:\workingdirectory\_plugins\SimpleScript.csx";
                 var scriptName2 = @"c:\workingdirectory\_plugins\DoubleScript.csx";
                 var fileSystem = GetMockFileSystem(new string[0], new string[0]);
-                var scriptCsCatalog = new ScriptCsCatalog("_plugins", GetOptions(fileSystem: fileSystem.Object));
+                var scriptCsCatalog = new ScriptCsCatalog("_plugins", GetOptions(fileSystem: fileSystem.Object,
+                                                                                 keepScriptsSeparated: keepScriptSeparated));
 
                 // act
                 var mefHost = GetComposedMefHost(scriptCsCatalog);

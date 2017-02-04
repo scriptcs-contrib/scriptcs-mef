@@ -4,9 +4,9 @@ using System.ComponentModel.Composition.Hosting;
 
 namespace ScriptCompositionSample
 {
-    internal class Program
+    internal static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             // Script args can be passed in so the script / script packs can access them.
             // For example the sample script, the logger script pack is used which depends on these args

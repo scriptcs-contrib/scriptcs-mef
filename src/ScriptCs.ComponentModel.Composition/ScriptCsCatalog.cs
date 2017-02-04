@@ -195,7 +195,7 @@ namespace ScriptCs.ComponentModel.Composition
 
             _options = options.OverridesNullByDefault();
 
-            Initialize(scriptFiles);
+            Initialize(scriptFiles.ToArray());
         }
 
         /// <summary>
@@ -248,7 +248,6 @@ namespace ScriptCs.ComponentModel.Composition
             ComposablePartDefinition[] removedDefinitions;
             object changeReferenceObject;
             string[] afterFiles;
-            string[] beforeFiles;
 
             while (true)
             {
@@ -257,7 +256,6 @@ namespace ScriptCs.ComponentModel.Composition
                 lock (_thisLock)
                 {
                     changeReferenceObject = _loadedFiles;
-                    beforeFiles = _loadedFiles.ToArray();
                 }
 
                 var newCatalog = ExecuteScripts(afterFiles);
@@ -387,7 +385,7 @@ namespace ScriptCs.ComponentModel.Composition
             _catalog = ExecuteScripts(scriptFiles);
         }
 
-        private void Initialize(IEnumerable<string> scriptFiles)
+        private void Initialize(string[] scriptFiles)
         {
             foreach (var scriptFile in scriptFiles)
             {
@@ -402,16 +400,16 @@ namespace ScriptCs.ComponentModel.Composition
             _catalog = ExecuteScripts(scriptFiles);
         }
 
-        private AssemblyCatalog ExecuteScripts(IEnumerable<string> scriptFiles)
+        private AssemblyCatalog ExecuteScripts(string[] scriptFiles)
         {
             var services = CreateScriptServices();
 
             ScriptResult result = null;
-            if (_options.KeepScriptsSeparated)
+            if (_options.KeepScriptsSeparated && scriptFiles.Any())
             {
                 foreach (var scriptFile in scriptFiles)
                 {
-                    var loader = GetLoader(new[] { scriptFile });
+                    var loader = GetLoader(scriptFile);
                     result = ExecuteScript(services, loader);
                 }
             }
@@ -473,7 +471,7 @@ namespace ScriptCs.ComponentModel.Composition
             return string.Format(CultureInfo.CurrentCulture, "{0} (Path=\"{1}\")", GetType().Name, Path);
         }
 
-        private string GetLoader(IEnumerable<string> scriptFiles)
+        private string GetLoader(params string[] scriptFiles)
         {
             var builder = new StringBuilder();
 
@@ -499,7 +497,7 @@ namespace ScriptCs.ComponentModel.Composition
             scriptServicesBuilder.Overrides[typeof(IFileSystem)] = _options.FileSystem;
             scriptServicesBuilder.LoadScriptPacks();
             scriptServicesBuilder.LoadModules(".csx", _options.Modules);
-            
+
             var scriptServices = scriptServicesBuilder.Build();
 
             var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(_options.FileSystem.CurrentDirectory, true);
