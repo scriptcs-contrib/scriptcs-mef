@@ -3,4 +3,4 @@ doc.SelectNodes "//ModuleName[starts-with(., 'ℛ')]/.."
     |> Seq.cast<System.Xml.XmlNode>
     |> Seq.iter (fun node -> node.ParentNode.RemoveChild(node) |> ignore)
     |> ignore
-System.IO.File.WriteAllLines("$env:APPVEYOR_BUILD_FOLDER/filtered-coverage.xml", doc.OuterXml.Split(' '))
+System.IO.File.WriteAllLines(string.Concat(System.Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER"), "filtered-coverage.xml"), doc.OuterXml.Split(' '))
