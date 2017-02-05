@@ -32,6 +32,10 @@ test_script:
   - ps: OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"$env:xunit20\xunit.console.x86.exe" -targetargs:"`"src\ScriptCs.ComponentModel.Composition.Test\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll`" -noshadow -appveyor" -output:coverage.xml -returntargetcode
 
 after_test:
+# filter coverage.xml - https://github.com/codecov/codecov-python/issues/85
+  - ps: [xml]$xml = Get-Content "coverage.xml" -Encoding UTF8
+  - ps: $xml.CoverageSession.Modules.Module | % { if ($_ -and $_.ModuleName -and $_.ModuleName.StartsWith('ℛ*')) { $_.ParentNode.RemoveChild($_) } }
+  - ps: $xml.Save("$env:APPVEYOR_BUILD_FOLDER/coverage.xml")
   - codecov -f coverage.xml -X gcov
 
 artifacts:
