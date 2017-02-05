@@ -1,3 +1,4 @@
+Push-AppveyorArtifact "coverage.xml"
 let doc = new System.Xml.XmlDocument() in doc.LoadXml "coverage.xml"
 doc.SelectNodes "//ModuleName[starts-with(., 'ℛ')]/.."
     |> Seq.cast<System.Xml.XmlNode>
