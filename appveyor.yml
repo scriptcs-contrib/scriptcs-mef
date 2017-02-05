@@ -33,9 +33,7 @@ test_script:
 
 after_test:
 # filter coverage.xml - https://github.com/codecov/codecov-python/issues/85
-  - ps: [xml]$xml = Get-Content "coverage.xml" -Encoding UTF8
-  - ps: $xml.CoverageSession.Modules.Module | % { if ($_ -and $_.ModuleName -and $_.ModuleName.StartsWith('ℛ*')) { $_.ParentNode.RemoveChild($_) } }
-  - ps: $xml.Save("$env:APPVEYOR_BUILD_FOLDER/coverage.xml")
+  - ps: .\FilterCoverage.ps1
   - codecov -f coverage.xml -X gcov
 
 artifacts:
