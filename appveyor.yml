@@ -33,6 +33,7 @@ test_script:
 
 after_test:
 # filter coverage.xml - https://github.com/codecov/codecov-python/issues/85
+  - ps: Push-AppveyorArtifact "coverage.xml"
   - "\"C:\\Program Files (x86)\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\fsi\" ./FilterCoverage.fsx"
   - codecov -f filtered-coverage.xml -X gcov
 
