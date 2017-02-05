@@ -6,17 +6,14 @@ init:
 install:
   - GitVersion /output buildserver /UpdateAssemblyInfo true
   - choco install opencover.portable -y
-  - choco install coveralls.io -source https://nuget.org/api/v2/ -y
   - choco install nvika -y
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
 
-#cache:
-#  - packages -> **\packages.config
-#  - C:\ProgramData\chocolatey\bin\inspectcode.exe -> appveyor.yml
-#  - C:\ProgramData\chocolatey\lib -> appveyor.yml
-
-environment:
-  COVERALLS_REPO_TOKEN:
-    secure: mzA3KujNlhtanIr2YQn90ZQdEQm1dGB9UJrgrZexSySIYHwUszIT2XYv37tuqDsF
+cache:
+- src/packages -> **\packages.config
+- C:\ProgramData\chocolatey\bin -> appveyor.yml
+- C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 before_build:
   - nuget restore src
@@ -32,7 +29,12 @@ after_build:
   - nuget pack src\ScriptCs.ComponentModel.Composition\ScriptCs.ComponentModel.Composition.csproj -Version %GitVersion_NuGetVersion% -OutputDirectory %appveyor_build_folder%\NugetAssets\ -symbols
 
 test_script:
-  - ps: .\RunTests.ps1
+  - ps: OpenCover.Console.exe -register:user -filter:"+[ScriptCs.ComponentModel.Composition]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -target:"$env:xunit20\xunit.console.x86.exe" -targetargs:"`"src\ScriptCs.ComponentModel.Composition.Test\bin\Release\ScriptCs.ComponentModel.Composition.Test.dll`" -noshadow -appveyor" -output:coverage.xml -returntargetcode
+
+after_test:
+# filter coverage.xml - https://github.com/codecov/codecov-python/issues/85
+  - "\"C:\\Program Files (x86)\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\fsi\" ./FilterCoverage.fsx"
+  - codecov -f filtered-coverage.xml -X gcov
 
 artifacts:
   - path: src\ScriptCs.ComponentModel.Composition\bin\Release\static-analysis.sarif.json
