@@ -42,6 +42,7 @@ artifacts:
 
   - path: coverage.xml
   - path: filtered-coverage.xml
+  - path: FilterCoverage.ps1
 
   - path: src\ScriptCs.ComponentModel.Composition\bin\Release\ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
     name: ScriptCs.ComponentModel.Composition.dll.CodeAnalysisLog.xml
